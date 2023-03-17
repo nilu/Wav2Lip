@@ -7,6 +7,11 @@ from glob import glob
 import torch, face_detection
 from models import Wav2Lip
 import platform
+import sys
+
+print("Python HELLOW")
+print (sys.version)
+print (sys.executable)
 
 parser = argparse.ArgumentParser(description='Inference code to lip-sync videos in the wild using Wav2Lip models')
 
