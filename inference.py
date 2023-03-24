@@ -227,19 +227,35 @@ def main():
 
 	if np.isnan(mel.reshape(-1)).sum() > 0:
 		raise ValueError('Mel contains nan! Using a TTS voice? Add a small epsilon noise to the wav file and try again')
+		
+	# import torch
 
-	mel_chunks = []
-	mel_idx_multiplier = 80./fps 
-	i = 0
-	while 1:
-		start_idx = int(i * mel_idx_multiplier)
-		if start_idx + mel_step_size > len(mel[0]):
-			mel_chunks.append(mel[:, len(mel[0]) - mel_step_size:])
-			break
-		mel_chunks.append(mel[:, start_idx : start_idx + mel_step_size])
-		i += 1
+	# Load the checkpoint file
+	print('TRING TO LOAD CHECKPOINT')
+	print(torch.__version__)
+	checkpoint = torch.load('./models/wav2lip.py')
 
-	print("Length of mel chunks: {}".format(len(mel_chunks)))
+	# Check the PyTorch version used to create the checkpoint
+	print('!!!!!!!!!')
+	print(checkpoint['state_dict']['torch_version'])
+
+	if not os.path.exists('mel_chunks.npy'):
+			mel_chunks = []
+			mel_idx_multiplier = 80./fps 
+			i = 0
+
+			while 1:
+					start_idx = int(i * mel_idx_multiplier)
+					if start_idx + mel_step_size > len(mel[0]):
+							mel_chunks.append(mel[:, len(mel[0]) - mel_step_size:])
+							break
+					mel_chunks.append(mel[:, start_idx : start_idx + mel_step_size])
+					i += 1
+
+			print("Length of mel chunks: {}".format(len(mel_chunks)))
+			np.save('mel_chunks.npy', mel_chunks)
+	else:
+			mel_chunks = np.load('mel_chunks.npy')
 
 	full_frames = full_frames[:len(mel_chunks)]
 
